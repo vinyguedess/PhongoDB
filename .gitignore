@@ -1,0 +1,8 @@
+# IDE and OS folders and files
+.idea
+nbproject
+.DS_STORE
+
+# Application folders and files
+composer.lock
+vendor
