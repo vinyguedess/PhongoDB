@@ -14,9 +14,9 @@ abstract class ActiveRecord extends Model
             throw new \Exception('Método "getCollection" não encontrado');
     }
 
-    public function find($id)
+    public function find($id = null)
     {
-
+        
     }
 
 }
