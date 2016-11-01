@@ -35,10 +35,31 @@ abstract class Model
     public function setAttributes($attributes)
     {
         foreach ($attributes as $attr => $value) {
-            if (in_array($attr, $this->_attributes)) {
+            if (in_array($attr, $this->_attributes) || $attr === '_id') {
+                $attr = $attr === '_id' ? 'id' : $attr;
                 $this->{$attr} = $value;
             }
         }
+    }
+
+    public function getJSONified()
+    {
+        $oAttributes = $this->getAttributes();
+        foreach ($oAttributes as $attr => $value) {
+            if ($value instanceof \MongoId) {
+                $oAttributes[$attr] = $value->id;
+                continue;
+            }
+
+            if ($value instanceof \DateTime) {
+                $oAttributes[$attr] = $value->format('Y-m-d H:i:s');
+                continue;
+            }
+
+            $oAttributes[$attr] = $value;
+        }
+
+        return $oAttributes;
     }
 
 }

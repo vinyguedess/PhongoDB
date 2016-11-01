@@ -8,12 +8,15 @@ use PhongoDBTest\Faked\Factory;
 class ActiveRecordTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testFindFirstResult()
+    public function testModelSaveFindAndUpdate()
     {
         $m = Factory::random('model');
-        $this->assertSame($m, $m->find());
+        $m->name = date("YmdHis");
+        $m->created_at = (new \DateTime);
+        $this->assertTrue($m->save());
 
-        $this->assertNull($m->find(1238120938102831209831209830192839012));
+        $foundModel = $m->find($m->id);
+        $this->assertEquals($foundModel->id, $m->id);
     }
 
 }

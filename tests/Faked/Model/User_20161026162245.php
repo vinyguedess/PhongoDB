@@ -3,7 +3,9 @@
 namespace PhongoDBTest\Faked\Model;
 
 
-class User_20161026162245 extends \PhongoDB\DB\ActiveRecord\ActiveRecord
+use PhongoDB\DB\ActiveRecord\ActiveRecord;
+
+class User_20161026162245 extends ActiveRecord
 {
 
     public $id;
@@ -12,7 +14,7 @@ class User_20161026162245 extends \PhongoDB\DB\ActiveRecord\ActiveRecord
 
     public function getCollection()
     {
-        return "user";
+        return "users";
     }
 
 }
