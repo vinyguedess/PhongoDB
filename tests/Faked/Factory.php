@@ -2,10 +2,6 @@
 
 namespace PhongoDBTest\Faked;
 
-
-use PhongoDB\DB\ActiveRecord\ActiveRecord;
-use PhongoDBTest\Faked\Model\User_20161026162245;
-
 class Factory
 {
 

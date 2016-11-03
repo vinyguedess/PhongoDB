@@ -4,9 +4,9 @@ namespace PhongoDB\DB\ActiveRecord;
 
 
 use PhongoDB\DB\Connection;
-use PhongoDB\Interfaces\IActiveRecordInterface;
+use PhongoDB\Interfaces\IEntityInterface;
 
-abstract class ActiveRecord extends Model implements IActiveRecordInterface
+abstract class ActiveRecord extends Model implements IEntityInterface
 {
 
     public function __construct()
@@ -22,8 +22,11 @@ abstract class ActiveRecord extends Model implements IActiveRecordInterface
         return empty($this->id);
     }
 
-    public function save()
+    public function save($validate = true)
     {
+        if ($validate && !$this->validate())
+            return false;
+
         $oData = $this->getJSONified();
         if ($this->isNewRecord())
             return $this->create($oData);
@@ -33,8 +36,7 @@ abstract class ActiveRecord extends Model implements IActiveRecordInterface
 
     public function create($oData)
     {
-        $conn = Connection::getInstance();
-        $c = new \MongoCollection($conn->selectDB('phongo_testing'), $this->getCollection());
+        $c = Connection::getCollection($this->getCollection());
 
         unset($oData['id']);
 
@@ -44,15 +46,21 @@ abstract class ActiveRecord extends Model implements IActiveRecordInterface
         return is_null($response['err']);
     }
 
-    public function update()
+    public function update($oData)
     {
+        $c = Connection::getCollection($this->getCollection());
 
+        $id = $oData['id'];
+        unset($oData['id']);
+
+        $response = $c->update(['_id' => $id instanceof \MongoId ? $id : new \MongoId($id)], $oData);
+
+        return is_null($response['err']);
     }
 
     public function find($id = null)
     {
-        $conn = Connection::getInstance();
-        $collection = new \MongoCollection($conn->selectDB('phongo_testing'), $this->getCollection());
+        $collection = Connection::getCollection($this->getCollection());
 
         $oData = $collection->findOne([
             '_id' => $id instanceof MongoId ? $id : new \MongoId($id)
@@ -64,6 +72,23 @@ abstract class ActiveRecord extends Model implements IActiveRecordInterface
         $cloneModel->setAttributes($oData);
 
         return $cloneModel;
+    }
+
+    public function delete()
+    {
+        $collection = Connection::getCollection($this->getCollection());
+
+        $id = $this->id;
+        if (!($id instanceof \MongoId))
+            $id = new \MongoId($id);
+
+        $response = $collection->remove(['_id' => $id]);
+        if ((int) $response['ok'] === 1) {
+            $this->id = null;
+            return true;
+        }
+
+        return false;
     }
 
 }
