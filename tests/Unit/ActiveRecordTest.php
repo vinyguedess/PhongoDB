@@ -2,7 +2,7 @@
 
 namespace PhongoDBTest\Unit;
 
-use PhongoDB\DB\Criteria;
+use PhongoDB\ArrayList;
 use PhongoDBTest\Faked\Factory;
 
 class ActiveRecordTest extends \PHPUnit_Framework_TestCase

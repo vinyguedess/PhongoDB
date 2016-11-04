@@ -19,6 +19,11 @@ class Criteria
     const GT = "\$gt";
     const LIKE = "\$regex";
 
+    public function getWhere()
+    {
+        return $this->where;
+    }
+
     public function where()
     {
         $args = func_get_args();
@@ -37,9 +42,10 @@ class Criteria
             if (!isset($this->where[$type][$args[0]]))
                 $this->where[$type] = [];
 
-            $fieldFilter = [
-                $args[0] => [$args[1] => $args[2]]
-            ];
+            if ($args[1] === self::EQ)
+                $fieldFilter = [$args[0] => $args[2]];
+            else
+                $fieldFilter = [$args[0] => [$args[1] => $args[2]]];
             if ($args[1] === self::LIKE)
                 $fieldFilter[$args[0]]['$options'] = 'i';
 
@@ -49,9 +55,19 @@ class Criteria
         return $this;
     }
 
+    public function getLimit()
+    {
+        return $this->limit;
+    }
+
     public function setLimit($limit)
     {
         $this->limit = $limit;
+    }
+
+    public function getOffset()
+    {
+        return $this->offset;
     }
 
     public function setOffset($offset)

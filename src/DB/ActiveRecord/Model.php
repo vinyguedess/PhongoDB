@@ -43,8 +43,9 @@ abstract class Model
             if (in_array($attr, $this->_attributes) || $attr === '_id') {
                 $attr = $attr === '_id' ? 'id' : $attr;
 
-                if (isset($this->_rules[$attr]) && isset($this->_rules[$attr]['Type']) && $this->_rules[$attr]['Type'] === 'date')
-                    $value = new \DateTime($value);
+                if (isset($this->_rules[$attr]) && isset($this->_rules[$attr]['Type']) && $this->_rules[$attr]['Type'] === 'date') {
+                    $value = is_array($value) ? new \DateTime($value['date']) : new \DateTime($value);
+                }
 
                 $this->{$attr} = $value;
             }
