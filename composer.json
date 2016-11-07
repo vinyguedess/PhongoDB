@@ -1,5 +1,7 @@
 {
   "name": "vinyguedess/phongodb",
+  "description": "Project inspired by some ORM's and ActiveRecords for MySQL and other SGBD's for MongoDB",
+  "keywords": ["ORM", "Active Record", "MongoDB"],
   "type": "project",
   "license": "MIT",
   "authors": [
