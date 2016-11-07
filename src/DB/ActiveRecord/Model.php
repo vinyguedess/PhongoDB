@@ -140,4 +140,9 @@ abstract class Model
         return !$this->hasErrors();
     }
 
+    public function hasMethod($methodName)
+    {
+        return in_array($methodName, $this->_methods);
+    }
+
 }

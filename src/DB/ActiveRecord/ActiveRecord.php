@@ -74,6 +74,20 @@ abstract class ActiveRecord extends Model implements IEntityInterface
         return $cloneModel;
     }
 
+    public function first()
+    {
+        $collection = Connection::getCollection($this->getCollection());
+
+        $oData = $collection->findOne();
+        if (is_null($oData))
+            return $oData;
+
+        $cloneModel = new static();
+        $cloneModel->setAttributes($oData);
+
+        return $cloneModel;
+    }
+
     public function delete()
     {
         $collection = Connection::getCollection($this->getCollection());

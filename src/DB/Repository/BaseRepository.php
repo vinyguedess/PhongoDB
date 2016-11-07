@@ -3,6 +3,8 @@
 namespace PhongoDB\DB\Repository;
 
 use PhongoDB\ArrayList;
+use PhongoDB\DB\ActiveRecord\ActiveRecord;
+use PhongoDB\DB\ActiveRecord\Model;
 use PhongoDB\DB\Connection;
 use PhongoDB\DB\Criteria;
 use PhongoDB\Interfaces\IEntityInterface;
@@ -19,8 +21,14 @@ class BaseRepository
         $this->dbCollection = Connection::getCollection($entityClass->getCollection());
     }
 
-    public function save(IEntityInterface &$entity, $validate = true)
+    public function save(&$entity, $validate = true)
     {
+        if (!($entity instanceof IEntityInterface))
+            return false;
+
+        if ($entity->hasMethod('save'))
+            return $entity->save($validate);
+
         if ($validate && !$entity->validate())
             return false;
 
@@ -88,6 +96,30 @@ class BaseRepository
         }
 
         return $collection;
+    }
+
+    public function delete($dataToDelete)
+    {
+        if ($dataToDelete instanceof ActiveRecord) {
+            if ($dataToDelete->hasMethod('delete'))
+                return $dataToDelete->delete();
+        }
+
+        if ($dataToDelete instanceof Model) {
+            $collection = Connection::getCollection($dataToDelete->getCollection());
+            $response = $collection->remove([
+                '_id' => $dataToDelete->id instanceof \MongoId ? $dataToDelete->id : new \MongoId($dataToDelete->id)
+            ]);
+
+            return $response['ok'] == 1;
+        }
+
+        if ($dataToDelete instanceof Criteria) {
+            $response = $this->dbCollection->remove($dataToDelete->getWhere());
+            return $response['ok'] == 1;
+        }
+
+        return false;
     }
 
     private function buildCriteria($filter)

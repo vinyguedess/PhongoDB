@@ -15,16 +15,24 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
     {
         $m = Factory::random('model');
         $m->name = "XPTO1";
+        $m->save();
 
         $m = Factory::random('model');
         $m->name = 'XPTO2';
+        $m->save();
     }
 
-    public function testRepositoryFindAll()
+    public function testRepositoryFindAndSearch()
     {
         $baseRepository = new BaseRepository(Factory::random('Entity'));
-        $mCollection = $baseRepository->findAll();
-        $this->assertInstanceOf(ArrayList::class, $mCollection);
+        $mArrayList = $baseRepository->findAll();
+        $this->assertInstanceOf(ArrayList::class, $mArrayList);
+        $this->assertGreaterThanOrEqual(2, $mArrayList->length());
+
+        $criteria = new Criteria;
+        $criteria->where('name', 'XPTO1');
+        $mArrayList = $baseRepository->findAll($criteria);
+        $this->assertEquals(1, $mArrayList->length());
     }
 
     public function testRepositorySave()
@@ -46,6 +54,24 @@ class BaseRepositoryTest extends \PHPUnit_Framework_TestCase
 
         $entity = $baseRepository->find($criteria);
         $this->assertEquals('HOCUS POCUS', $entity->name);
+    }
+
+    public function testRepositoryDelete()
+    {
+        $baseRepository = new BaseRepository(Factory::random('model'));
+        $this->assertTrue($baseRepository->delete(Factory::random('model')));
+    }
+
+    public function tearDown()
+    {
+        $hasModel = true;
+        while ($hasModel) {
+            $createdModel = Factory::random('model')->first();
+            if (is_null($createdModel))
+                break;
+
+            $createdModel->delete();
+        }
     }
 
 }
